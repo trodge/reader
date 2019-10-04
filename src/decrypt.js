@@ -1,5 +1,15 @@
 const { key } = require('./secrets.js');
 const subtle = window.crypto.subtle;
+
+function str2ab(str) {
+    var buf = new ArrayBuffer(str.length);
+    var bufView = new Uint8Array(buf);
+    for (var i=0, strLen=str.length; i < strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+    }
+    return buf;
+}
+
 module.exports = () => {
     console.log('Decrypting...');
     const enc = new TextEncoder();
@@ -27,7 +37,7 @@ module.exports = () => {
                     //label: Uint8Array([...]) //optional
                 },
                 privateKey, //from generateKey or importKey above
-                enc.encode(element.innerText) //ArrayBuffer of the data
+                str2ab(element.innerText) //ArrayBuffer of the data
             ).catch(err => console.error(err)));
         }
         Promise.all(promises).then(decrypted => {
