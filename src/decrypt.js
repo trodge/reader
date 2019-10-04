@@ -12,7 +12,6 @@ function str2ab(str) {
 
 module.exports = () => {
     console.log('Decrypting...');
-    const enc = new TextEncoder();
     const dec = new TextDecoder();
     subtle.importKey(
         'jwk', //can be 'jwk' (public or private), 'spki' (public only), or 'pkcs8' (private only)
@@ -30,7 +29,6 @@ module.exports = () => {
         const promises = [];
         const elements = document.getElementsByClassName('encrypted');
         for (let element of elements) {
-            console.log(enc.encode(element.innerText));
             promises.push(subtle.decrypt(
                 {
                     name: "RSA-OAEP",
