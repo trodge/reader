@@ -1,7 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 
-const decrypt = require('./decrypt.js')
+const decrypt = require('./decrypt.js');
+const dec = new TextDecoder();
 
 export default class Inbox extends React.Component {
     state = {
@@ -9,9 +10,20 @@ export default class Inbox extends React.Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:8080/').then(response => {
-            console.log('response.data:', response.data);
-            this.setState({ messages: response.data }, () => decrypt());
+        axios.get('https://contactee.herokuapp.com/').then(response => {
+            const messages = response.data;
+            decrypt(messages).then(({ promise, items, itemCount }) => {
+                promise.then(buffers => {
+                    buffers.forEach((buffer, i) => {
+                        console.log(buffer, i);
+                        const message = messages[Math.floor(i / itemCount)];
+                        message[items[i % itemCount]] = dec.decode(buffer);
+                    });
+                    console.log(messages);
+                    this.setState({ messages: messages });
+                });
+
+            });
         }).catch(error => {
             return error;
         });
